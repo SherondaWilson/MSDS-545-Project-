@@ -1,5 +1,5 @@
 import streamlit as st
 
-st.title('👩‍🎓 MSDS 545 Project')
+st.title('👩‍🎓 MSDS545Project')
 
-st.write('Hello world!')
+st.write('This is a ML app')
