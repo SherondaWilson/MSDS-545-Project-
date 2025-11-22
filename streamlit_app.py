@@ -2,4 +2,4 @@ import streamlit as st
 
 st.title('👩‍🎓 MSDS545Project')
 
-st.write('This is a ML app')
+st.write('Welcome to our machine learning model building app')
