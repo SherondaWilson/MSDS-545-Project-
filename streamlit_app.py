@@ -141,7 +141,7 @@ def main():
     else:
         st.info(
             "I couldn't automatically find a sequence column. "
-            "Please check your CSV column names (e.g., 'sequence', 'protein_sequence')."
+            "Please check your CSV column names (e.g., 'sequence', 'protein_sequence_1')."
         )
 
     # ---------------------------------------------------
@@ -149,7 +149,7 @@ def main():
    # ---------------------------------------------------
     # Sequence length statistics (if we can find a sequence column)
     # ---------------------------------------------------
-    seq_col_candidates = ["sequence", "Sequence", "protein_sequence", "seq"]
+    seq_col_candidates = ["sequence", "Sequence", "protein_sequence_1", "seq"]
     seq_col = None
     for col in seq_col_candidates:
         if col in all_df.columns:
