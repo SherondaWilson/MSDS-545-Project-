@@ -301,7 +301,26 @@ def main():
                 mime="text/csv"
             )
             st.success("Your Kaggle submission file is ready!")
+            
+        # getting list of feature columns
+        cols = df.columns.tolist()
+        cols.remove('protein_sequences_1')
+        cols.remove('protein_sequences_2')
+        cols.remove('PPI')
 
+import matplotlib.pyplot as plt
+import seaborn as sns for col in cols: 
+
+    # Create a box plot
+      sns.boxplot(x='PPI', y=col, data=df)
+    
+    # Set title and labels
+    # plt.title('Comparison of Feature Between PPI Groups')
+    plt.xlabel('PPI Occurrence')
+    plt.ylabel(col)
+
+    # Show the plot
+    plt.show()
         
 if __name__ == "__main__":
     main() 
