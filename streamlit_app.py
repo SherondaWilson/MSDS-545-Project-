@@ -155,24 +155,16 @@ def main():
         if col in all_df.columns:
             seq_col = col
             break
+# Let the user choose which column to use as the sequence for modeling
+string_cols = [c for c in all_df.columns if all_df[c].dtype == "object"]
 
-    if seq_col is not None:
-        st.subheader(f"Sequence Length Statistics (using column: `{seq_col}`)")
-        all_df["sequence_length"] = all_df[seq_col].astype(str).str.len()
-
-        st.write(all_df["sequence_length"].describe())
-
-        st.bar_chart(
-            all_df["sequence_length"]
-            .value_counts()
-            .sort_index()
-            .head(100)  # limit to avoid huge charts
-        )
-    else:
-        st.info(
-            "I couldn't automatically find a sequence column. "
-            "Please check your CSV column names (e.g., 'sequence', 'protein_sequence')."
-        )
+st.sidebar.subheader("Sequence Column for Modeling")
+seq_col = st.sidebar.selectbox(
+    "Select the sequence column to use for modeling:",
+    options=string_cols,
+    index=0 if "protein_sequences_1" in string_cols else 0,
+)
+    
 
     # ---------------------------------------------------
     # 4. Modeling & Prediction Section
