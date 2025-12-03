@@ -324,8 +324,8 @@ for col in cols:
     
     # Set title and labels
     # plt.title('Comparison of Feature Between PPI Groups')
-      plt.xlabel('PPI Occurrence')
-      plt.ylabel(col)
+    plt.xlabel('PPI Occurrence')
+    plt.ylabel(col)
 
     # Show the plot
       plt.show()
