@@ -146,133 +146,157 @@ def main():
 
     # ---------------------------------------------------
     # Placeholder for future modeling
+   # ---------------------------------------------------
+    # Sequence length statistics (if we can find a sequence column)
     # ---------------------------------------------------
-    st.markdown("---")
-    st.markdown("### Next Step: Modeling / Prediction")
-    st.markdown(
-        "Now that the data is loading correctly, you can plug `all_df` into a model "
-        "(e.g., train/test split, feature extraction from sequences, etc.)."
-    )
+    seq_col_candidates = ["sequence", "Sequence", "protein_sequence", "seq"]
+    seq_col = None
+    for col in seq_col_candidates:
+        if col in all_df.columns:
+            seq_col = col
+            break
 
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (
-    classification_report,
-    confusion_matrix,
-    roc_auc_score,
-    roc_curve
-)
+    if seq_col is not None:
+        st.subheader(f"Sequence Length Statistics (using column: `{seq_col}`)")
+        all_df["sequence_length"] = all_df[seq_col].astype(str).str.len()
 
-st.markdown("---")
-st.header("🔬 Modeling & Prediction")
+        st.write(all_df["sequence_length"].describe())
 
-if seq_col is None:
-    st.warning("⚠️ Cannot proceed with modeling because no sequence column was detected.")
-else:
-    st.subheader("Feature Engineering")
-
-    # ---- Feature Engineering ----
-    def extract_features(df):
-        """
-        Convert protein sequences into simple numeric features:
-        - Sequence length
-        - Amino acid frequency (20 standard AAs)
-        """
-        df = df.copy()
-        df["length"] = df[seq_col].astype(str).str.len()
-        
-        # Amino acid set
-        amino_acids = list("ACDEFGHIKLMNPQRSTVWY")
-        for aa in amino_acids:
-            df[f"freq_{aa}"] = df[seq_col].astype(str).apply(lambda s: s.count(aa) / len(s) if len(s) > 0 else 0)
-
-        return df
-
-    # Extract features
-    feat_df = extract_features(all_df)
-
-    feature_cols = [c for c in feat_df.columns if c not in [seq_col, "label"]]
-    X = feat_df[feature_cols]
-    y = feat_df["label"]
-
-    # ---- Train/Test Split ----
-    st.subheader("Train/Test Split")
-    test_size = st.slider("Test size (fraction)", 0.1, 0.5, 0.2, step=0.05)
-    random_state = 42
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, stratify=y, random_state=random_state
-    )
-
-    st.write(f"Training rows: {len(X_train)}")
-    st.write(f"Testing rows: {len(X_test)}")
-
-    # ---- Model Training ----
-    st.subheader("Train Model")
-    model = RandomForestClassifier(
-        n_estimators=300,
-        max_depth=None,
-        class_weight="balanced",
-        random_state=42
-    )
-    model.fit(X_train, y_train)
-
-    st.success("🎉 Model training complete!")
-
-    # ---- Evaluation ----
-    st.subheader("Model Evaluation")
-
-    y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test)[:, 1]
-
-    colA, colB = st.columns(2)
-
-    with colA:
-        st.write("**Classification Report**")
-        st.text(classification_report(y_test, y_pred))
-
-    with colB:
-        st.write("**Confusion Matrix**")
-        st.write(confusion_matrix(y_test, y_pred))
-
-        st.write("**ROC-AUC Score:**", roc_auc_score(y_test, y_proba))
-
-    # ---- ROC Curve ----
-    fpr, tpr, _ = roc_curve(y_test, y_proba)
-    roc_data = pd.DataFrame({"FPR": fpr, "TPR": tpr})
-    st.line_chart(roc_data.set_index("FPR"))
-
-    # ---- Feature Importance ----
-    st.subheader("Feature Importance")
-    importance_df = pd.DataFrame({
-        "feature": feature_cols,
-        "importance": model.feature_importances_
-    }).sort_values(by="importance", ascending=False)
-
-    st.dataframe(importance_df.head(20))
-
-    st.bar_chart(importance_df.set_index("feature").head(20))
-
-    # ---------------------------------------------------
-    #  Generate Prediction File for Kaggle
-    # ---------------------------------------------------
-    st.subheader("📄 Generate Kaggle Submission File")
-
-    if st.button("Create Kaggle Submission CSV"):
-        preds_df = pd.DataFrame({
-            "sequence": all_df[seq_col],
-            "prediction": model.predict(feat_df[feature_cols])
-        })
-
-        csv_data = preds_df.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="Download Kaggle Predictions CSV",
-            data=csv_data,
-            file_name="kaggle_ppi_predictions.csv",
-            mime="text/csv"
+        st.bar_chart(
+            all_df["sequence_length"]
+            .value_counts()
+            .sort_index()
+            .head(100)  # limit to avoid huge charts
         )
-        st.success("Your Kaggle submission file is ready!")
+    else:
+        st.info(
+            "I couldn't automatically find a sequence column. "
+            "Please check your CSV column names (e.g., 'sequence', 'protein_sequence')."
+        )
+
+    # ---------------------------------------------------
+    # 4. Modeling & Prediction Section
+    # ---------------------------------------------------
+    import numpy as np
+    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import (
+        classification_report,
+        confusion_matrix,
+        roc_auc_score,
+        roc_curve
+    )
+
+    st.markdown("---")
+    st.header("🔬 Modeling & Prediction")
+
+    if seq_col is None:
+        st.warning("⚠️ Cannot proceed with modeling because no sequence column was detected.")
+    else:
+        st.subheader("Feature Engineering")
+
+        # ---- Feature Engineering ----
+        def extract_features(df):
+            """
+            Convert protein sequences into simple numeric features:
+            - Sequence length
+            - Amino acid frequency (20 standard AAs)
+            """
+            df = df.copy()
+            df["length"] = df[seq_col].astype(str).str.len()
+            
+            # Amino acid set
+            amino_acids = list("ACDEFGHIKLMNPQRSTVWY")
+            for aa in amino_acids:
+                df[f"freq_{aa}"] = df[seq_col].astype(str).apply(
+                    lambda s: s.count(aa) / len(s) if len(s) > 0 else 0
+                )
+
+            return df
+
+        # Extract features
+        feat_df = extract_features(all_df)
+
+        feature_cols = [c for c in feat_df.columns if c not in [seq_col, "label"]]
+        X = feat_df[feature_cols]
+        y = feat_df["label"]
+
+        # ---- Train/Test Split ----
+        st.subheader("Train/Test Split")
+        test_size = st.slider("Test size (fraction)", 0.1, 0.5, 0.2, step=0.05)
+        random_state = 42
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_size, stratify=y, random_state=random_state
+        )
+
+        st.write(f"Training rows: {len(X_train)}")
+        st.write(f"Testing rows: {len(X_test)}")
+
+        # ---- Model Training ----
+        st.subheader("Train Model")
+        model = RandomForestClassifier(
+            n_estimators=300,
+            max_depth=None,
+            class_weight="balanced",
+            random_state=42
+        )
+        model.fit(X_train, y_train)
+
+        st.success("🎉 Model training complete!")
+
+        # ---- Evaluation ----
+        st.subheader("Model Evaluation")
+
+        y_pred = model.predict(X_test)
+        y_proba = model.predict_proba(X_test)[:, 1]
+
+        colA, colB = st.columns(2)
+
+        with colA:
+            st.write("**Classification Report**")
+            st.text(classification_report(y_test, y_pred))
+
+        with colB:
+            st.write("**Confusion Matrix**")
+            st.write(confusion_matrix(y_test, y_pred))
+            st.write("**ROC-AUC Score:**", roc_auc_score(y_test, y_proba))
+
+        # ---- ROC Curve ----
+        fpr, tpr, _ = roc_curve(y_test, y_proba)
+        roc_data = pd.DataFrame({"FPR": fpr, "TPR": tpr})
+        st.line_chart(roc_data.set_index("FPR"))
+
+        # ---- Feature Importance ----
+        st.subheader("Feature Importance")
+        importance_df = pd.DataFrame({
+            "feature": feature_cols,
+            "importance": model.feature_importances_
+        }).sort_values(by="importance", ascending=False)
+
+        st.dataframe(importance_df.head(20))
+        st.bar_chart(importance_df.set_index("feature").head(20))
+
+        # ---------------------------------------------------
+        #  Generate Prediction File for Kaggle
+        # ---------------------------------------------------
+        st.subheader("📄 Generate Kaggle Submission File")
+
+        if st.button("Create Kaggle Submission CSV"):
+            preds_df = pd.DataFrame({
+                "sequence": all_df[seq_col],
+                "prediction": model.predict(feat_df[feature_cols])
+            })
+
+            csv_data = preds_df.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="Download Kaggle Predictions CSV",
+                data=csv_data,
+                file_name="kaggle_ppi_predictions.csv",
+                mime="text/csv"
+            )
+            st.success("Your Kaggle submission file is ready!")
+
         
 if __name__ == "__main__":
     main() 
