@@ -304,6 +304,7 @@ def main():
             
         # getting list of feature columns
         cols = df.columns.tolist()
+        cols = feature_cols
         cols.remove('protein_sequences_1')
         cols.remove('protein_sequences_2')
         cols.remove('PPI')
@@ -313,7 +314,13 @@ import seaborn as sns
 for col in cols: 
 
     # Create a box plot
-      sns.boxplot(x='PPI', y=col, data=df)
+      sns.boxplot(x='PPI', y=col, data=featdf)
+    
+for col in cols:
+    sns.boxplot(x='label', y=col, data=feat_df)
+    plt.title(f"{col} vs Label")
+    st.pyplot(plt)
+    plt.clf()
     
     # Set title and labels
     # plt.title('Comparison of Feature Between PPI Groups')
