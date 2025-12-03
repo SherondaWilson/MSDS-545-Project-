@@ -309,7 +309,8 @@ def main():
         cols.remove('PPI')
 
 import matplotlib.pyplot as plt
-import seaborn as sns for col in cols: 
+import seaborn as sns 
+for col in cols: 
 
     # Create a box plot
       sns.boxplot(x='PPI', y=col, data=df)
