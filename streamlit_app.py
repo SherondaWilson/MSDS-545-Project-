@@ -155,24 +155,24 @@ def main():
         if col in all_df.columns:
             seq_col = col
             break
-# Let the user choose which column to use as the sequence for modeling
-string_cols = [c for c in all_df.columns if all_df[c].dtype == "object"]
+   # Let the user choose which column to use as the sequence for modeling
+   string_cols = [c for c in all_df.columns if all_df[c].dtype == "object"]
 
-st.sidebar.subheader("Sequence Column for Modeling")
-seq_col = st.sidebar.selectbox(
-    "Select the sequence column to use for modeling:",
-    options=string_cols,
-    index=0 if "protein_sequences_1" in string_cols else 0,
-)
+   st.sidebar.subheader("Sequence Column for Modeling")
+   seq_col = st.sidebar.selectbox(
+       "Select the sequence column to use for modeling:",
+        options=string_cols,
+        index=0 if "protein_sequences_1" in string_cols else 0,
+   )
     
 
     # ---------------------------------------------------
     # 4. Modeling & Prediction Section
     # ---------------------------------------------------
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (
+   import numpy as np
+   from sklearn.model_selection import train_test_split
+   from sklearn.ensemble import RandomForestClassifier
+   from sklearn.metrics import (
         classification_report,
         confusion_matrix,
         roc_auc_score,
