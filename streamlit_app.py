@@ -169,6 +169,8 @@ def main():
     # ---------------------------------------------------
     # 4. Modeling & Prediction Section
     # ---------------------------------------------------
+    # 4. Modeling & Prediction Section
+    # ---------------------------------------------------
     import numpy as np
     from sklearn.model_selection import train_test_split
     from sklearn.ensemble import RandomForestClassifier
@@ -209,9 +211,20 @@ def main():
         # Extract features
         feat_df = extract_features(all_df)
 
-        feature_cols = [c for c in feat_df.columns if c not in [seq_col, "label"]]
+        # ✅ 1) Keep ONLY numeric columns as features
+        numeric_cols = feat_df.select_dtypes(include=[np.number]).columns
+        feature_cols = [c for c in numeric_cols if c != "label"]
+
+        # Debug view (optional)
+        # st.write("Feature columns:", feature_cols)
+        # st.write(feat_df[feature_cols].dtypes)
+
         X = feat_df[feature_cols]
         y = feat_df["label"]
+
+        # ✅ 2) Clean NaN / inf values
+        X = X.replace([np.inf, -np.inf], np.nan)
+        X = X.fillna(0)
 
         # ---- Train/Test Split ----
         st.subheader("Train/Test Split")
@@ -277,7 +290,7 @@ def main():
         if st.button("Create Kaggle Submission CSV"):
             preds_df = pd.DataFrame({
                 "sequence": all_df[seq_col],
-                "prediction": model.predict(feat_df[feature_cols])
+                "prediction": model.predict(X)  # X is feat_df[feature_cols] cleaned
             })
 
             csv_data = preds_df.to_csv(index=False).encode('utf-8')
