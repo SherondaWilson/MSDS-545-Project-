@@ -309,7 +309,7 @@ def main():
         cols.remove('protein_sequences_2')
         cols.remove('PPI')
 
-import matplotlib.py plot as plt
+import matplotlib.pyplot as plt
 import seaborn as sns 
 for col in cols: 
 
