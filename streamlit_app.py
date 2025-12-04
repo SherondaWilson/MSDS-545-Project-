@@ -1,9 +1,4 @@
 import streamlit as st
-
-st.title('👩‍🎓 MSDS545Project')
-
-st.write('Welcome to our machine learning model building app')
-
 import pandas as pd
 
 # ---------------------------------------------------
@@ -13,6 +8,9 @@ st.set_page_config(
     page_title="Protein Sequence Dataset Explorer",
     layout="wide"
 )
+
+st.title('👩‍🎓 MSDS545Project')
+st.write('Welcome to our machine learning model building app') 
 
 # ---------------------------------------------------
 # 1. GitHub RAW URLs for your CSV files
@@ -302,29 +300,31 @@ def main():
             )
             st.success("Your Kaggle submission file is ready!")
             
-        # getting list of feature columns
-        cols = df.columns.tolist()
-        cols = feature_cols
-        cols.remove('protein_sequences_1')
-        cols.remove('protein_sequences_2')
-        cols.remove('PPI')
-        for col in cols: 
+       # ---------------------------------------------------
+        #  Exploratory Boxplots for Feature Distributions
+        # ---------------------------------------------------
+        import seaborn as sns
+        import matplotlib.pyplot as plt
 
-          # Create a box plot
-          sns.boxplot(x='PPI', y=col, data=featdf)
-    
+        st.subheader("Feature Distributions by Label")
+
+        # Start from the numeric feature columns
+        cols = feature_cols.copy()
+
+        # Safely remove columns if they exist
+        for c in ["protein_sequences_1", "protein_sequences_2", "PPI"]:
+            if c in cols:
+                cols.remove(c)
+
+        # Create a boxplot for each feature vs label
         for col in cols:
-            sns.boxplot(x='label', y=col, data=feat_df)
-            plt.title(f"{col} vs Label")
-            st.pyplot(plt)
-            plt.clf()
-            
-            # Set title and labels
-            # plt.title('Comparison of Feature Between PPI Groups')
-            plt.xlabel('PPI Occurrence')
-            plt.ylabel(col)
-        
-            # Show the plot
-            plt.show()
+            fig, ax = plt.subplots()
+            sns.boxplot(x="label", y=col, data=feat_df, ax=ax)
+            ax.set_title(f"{col} vs Label")
+            ax.set_xlabel("Label (0 = Negative, 1 = Positive)")
+            ax.set_ylabel(col)
+            st.pyplot(fig)
+            plt.close(fig)
 
-     if __name__ == "__main__": main() 
+if __name__ == "__main__":
+    main()
