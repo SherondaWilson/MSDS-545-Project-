@@ -308,28 +308,27 @@ def main():
         cols.remove('protein_sequences_1')
         cols.remove('protein_sequences_2')
         cols.remove('PPI')
+        for col in cols: 
 
-import matplotlib.pyplot as plt
-import seaborn as sns 
-
-for col in cols: 
-
-    # Create a box plot
-      sns.boxplot(x='PPI', y=col, data=featdf)
+          # Create a box plot
+          sns.boxplot(x='PPI', y=col, data=featdf)
     
-for col in cols:
-    sns.boxplot(x='label', y=col, data=feat_df)
-    plt.title(f"{col} vs Label")
-    st.pyplot(plt)
-    plt.clf()
-    
-    # Set title and labels
-    # plt.title('Comparison of Feature Between PPI Groups')
-    plt.xlabel('PPI Occurrence')
-    plt.ylabel(col)
-
-    # Show the plot
-    plt.show()
+        for col in cols:
+            sns.boxplot(x='label', y=col, data=feat_df)
+            plt.title(f"{col} vs Label")
+            st.pyplot(plt)
+            plt.clf()
+            
+            # Set title and labels
+            # plt.title('Comparison of Feature Between PPI Groups')
+            plt.xlabel('PPI Occurrence')
+            plt.ylabel(col)
         
-if __name__ == "__main__":
-    main() 
+            # Show the plot
+            plt.show()
+
+
+
+        
+     if __name__ == "__main__":
+        main() 
