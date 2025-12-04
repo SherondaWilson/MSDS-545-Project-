@@ -16,8 +16,8 @@ st.write('Welcome to our machine learning model building app')
 # 1. GitHub RAW URLs for your CSV files
 #    Update these if your repo/path is different
 # ---------------------------------------------------
-POS_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/positive_protein_sequences.xlsx"
-NEG_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/negative_protein_sequences.xlsx"
+POS_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/positive_protein_sequences.csv"
+NEG_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/negative_protein_sequences.csv"
 
 
 # ---------------------------------------------------
@@ -30,8 +30,8 @@ def load_data(sample_size=None):
     Adds a 'label' column and optionally returns a random sample.
     """
     # Read both CSVs from GitHub
-    pos_df = pd.read_excel(POS_URL)
-    neg_df = pd.read_excel(NEG_URL)
+    pos_df = pd.read_csv(POS_URL)
+    neg_df = pd.read_csv(NEG_URL)
 
     # Add labels: 1 = positive, 0 = negative
     pos_df["label"] = 1
