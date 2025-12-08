@@ -193,13 +193,13 @@ def main():
         f"({len(all_df):,} rows in the working dataset)."
     )
     def amino_acid_frequency(seq):
-    """
-    Given a single protein sequence string, return a DataFrame
-    with amino acid counts and frequencies.
-    """
+        """
+        Given a single protein sequence string, return a DataFrame
+        with amino acid counts and frequencies.
+        """
     if seq is None:
         seq = ""
-    seq = str(seq)
+        seq = str(seq)
 
     # Count each amino acid
     counts = {aa: seq.count(aa) for aa in AMINO_ACIDS}
