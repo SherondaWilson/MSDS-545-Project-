@@ -42,8 +42,8 @@ with st.expander("data"):
 
         # Optional sampling to avoid memory issues with very large data
         if sample_size is not None and sample_size > 0:
-        sample_size = min(sample_size, len(all_df))
-        all_df = all_df.sample(n=sample_size, random_state=42)
+            sample_size = min(sample_size, len(all_df))
+            all_df = all_df.sample(n=sample_size, random_state=42)
 
         return pos_df, neg_df, all_df
 
