@@ -44,7 +44,89 @@ def load_data(sample_size=None):
         all_df = all_df.sample(n=sample_size, random_state=42)
 
     return pos_df, neg_df, all_df
+    # ---------------------------------------------------
+    # 4. Explore proteins and visualize interaction
+    # ---------------------------------------------------
+    st.markdown("---")
+    st.header("🧬 Explore Proteins by Category")
 
+    # Try to guess the two sequence columns if you have PPI pairs
+    pair_candidates = ["protein_sequences_1", "protein_sequences_2",
+                       "seq1", "seq2", "protein1", "protein2"]
+    pair_cols = [c for c in pair_candidates if c in all_df.columns]
+
+    if len(pair_cols) >= 2:
+        seq1_col, seq2_col = pair_cols[:2]
+    else:
+        # Fallback: treat the single sequence column as seq1
+        seq1_col = seq_col
+        seq2_col = None
+
+    # --- Select one positive and one negative example ---
+    col_pos, col_neg = st.columns(2)
+
+    with col_pos:
+        st.subheader("Positive category (label = 1)")
+        # Build a label for the dropdown that shows a short snippet
+        if seq2_col is not None:
+            pos_options = [
+                (i,
+                 f"Row {i}: {str(pos_df.iloc[i][seq1_col])[:12]}...  |  "
+                 f"{str(pos_df.iloc[i][seq2_col])[:12]}...")
+                for i in range(len(pos_df))
+            ]
+        else:
+            pos_options = [
+                (i,
+                 f"Row {i}: {str(pos_df.iloc[i][seq1_col])[:25]}...")
+                for i in range(len(pos_df))
+            ]
+
+        pos_choice = st.selectbox(
+            "Select a positive protein (or pair)",
+            options=pos_options,
+            format_func=lambda x: x[1]
+        )
+        pos_idx = pos_choice[0]
+        pos_row = pos_df.iloc[pos_idx]
+
+        st.write("**Selected positive example:**")
+        if seq2_col is not None:
+            st.text_area("Positive protein 1", str(pos_row[seq1_col]), height=120)
+            st.text_area("Positive protein 2", str(pos_row[seq2_col]), height=120)
+        else:
+            st.text_area("Positive protein", str(pos_row[seq1_col]), height=120)
+
+    with col_neg:
+        st.subheader("Negative category (label = 0)")
+        if seq2_col is not None:
+            neg_options = [
+                (i,
+                 f"Row {i}: {str(neg_df.iloc[i][seq1_col])[:12]}...  |  "
+                 f"{str(neg_df.iloc[i][seq2_col])[:12]}...")
+                for i in range(len(neg_df))
+            ]
+        else:
+            neg_options = [
+                (i,
+                 f"Row {i}: {str(neg_df.iloc[i][seq1_col])[:25]}...")
+                for i in range(len(neg_df))
+            ]
+
+        neg_choice = st.selectbox(
+            "Select a negative protein (or pair)",
+            options=neg_options,
+            format_func=lambda x: x[1]
+        )
+        neg_idx = neg_choice[0]
+        neg_row = neg_df.iloc[neg_idx]
+
+        st.write("**Selected negative example:**")
+        if seq2_col is not None:
+            st.text_area("Negative protein 1", str(neg_row[seq1_col]), height=120)
+            st.text_area("Negative protein 2", str(neg_row[seq2_col]), height=120)
+        else:
+            st.text_area("Negative protein", str(neg_row[seq1_col]), height=120)
 
 # ---------------------------------------------------
 # 3. Main Streamlit app
