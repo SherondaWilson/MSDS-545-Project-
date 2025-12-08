@@ -11,15 +11,15 @@ st.set_page_config(
 
 st.title('👩‍🎓 MSDS545Project')
 st.write('Welcome to our machine learning model building app') 
-
+with st.expander("data"):
+    st.write("rawdata")
 # ---------------------------------------------------
 # 1. GitHub RAW URLs for your CSV files
 #    Update these if your repo/path is different
 # ---------------------------------------------------
-POS_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/positive_protein_sequences.csv"
-NEG_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/negative_protein_sequences.csv"
-with st.expander("data"):
-    st.write("rawdata")
+    POS_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/positive_protein_sequences.csv"
+    NEG_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/negative_protein_sequences.csv"
+
 # ---------------------------------------------------
 # 2. Data loading function (with optional sampling)
 # ---------------------------------------------------
