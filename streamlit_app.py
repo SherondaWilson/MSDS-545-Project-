@@ -11,8 +11,6 @@ st.set_page_config(
 
 st.title('👩‍🎓 MSDS545Project')
 st.write('Welcome to our machine learning model building app') 
-with st.expander("data"):
-    st.write("rawdata")
 # ---------------------------------------------------
 # 1. GitHub RAW URLs for your CSV files
 #    Update these if your repo/path is different
@@ -90,7 +88,24 @@ def main():
         f"Loaded {len(pos_df):,} positive and {len(neg_df):,} negative sequences "
         f"({len(all_df):,} rows in the working dataset)."
     )
+     # ---------------------------------------------------
+    # Raw data viewer in an expander + dropdown
+    # ---------------------------------------------------
+    with st.expander("📊 View raw data"):
+        option = st.selectbox(
+            "Choose which dataset to view:",
+            ["Positive sequences", "Negative sequences", "Combined (all)"]
+        )
 
+        if option == "Positive sequences":
+            st.write("**Positive sequences (label = 1)**")
+            st.dataframe(pos_df)
+        elif option == "Negative sequences":
+            st.write("**Negative sequences (label = 0)**")
+            st.dataframe(neg_df)
+        else:
+            st.write("**Combined dataset**")
+            st.dataframe(all_df)
     # ---------------------------------------------------
     # Data previews
     # ---------------------------------------------------
