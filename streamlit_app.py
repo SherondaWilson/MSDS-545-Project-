@@ -44,6 +44,19 @@ def load_data(sample_size=None):
         all_df = all_df.sample(n=sample_size, random_state=42)
 
     return pos_df, neg_df, all_df
+    AMINO_ACIDS = list("ACDEFGHIKLMNPQRSTVWY")
+
+def amino_acid_frequency(sequence: str) -> pd.DataFrame:
+    """
+    Given a protein sequence string, return a DataFrame with
+    amino acid frequencies (fraction of each AA).
+    """
+    seq = str(sequence).upper()
+    counts = {aa: seq.count(aa) for aa in AMINO_ACIDS}
+    total = sum(counts.values())
+    freqs = {aa: (counts[aa] / total if total > 0 else 0.0) for aa in AMINO_ACIDS}
+    df = pd.DataFrame({"AA": list(freqs.keys()), "frequency": list(freqs.values())})
+    return df.set_index("AA")
     # ---------------------------------------------------
     # 4. Explore proteins and visualize interaction
     # ---------------------------------------------------
@@ -191,6 +204,64 @@ def main():
         f"({len(all_df):,} rows in the working dataset)."
     )
      # ---------------------------------------------------
+    # Select sequences from each category (Positive/Negative)
+    # ---------------------------------------------------
+    st.markdown("---")
+    st.header("🔎 Select Proteins and Visualize Amino Acid Frequencies")
+
+    # Try to detect a sequence column from the positive df
+    string_cols = [c for c in pos_df.columns if pos_df[c].dtype == "object"]
+    if not string_cols:
+        st.error("No string columns found in the positive dataset to use as sequences.")
+        return
+
+    seq_col = st.selectbox(
+        "Select the sequence column to use:",
+        options=string_cols,
+        index=0
+    )
+
+    # Sidebar: choose which rows to visualize
+    st.sidebar.subheader("Select sequences for visualization")
+
+    pos_index = st.sidebar.number_input(
+        "Positive sequence index",
+        min_value=0,
+        max_value=len(pos_df) - 1,
+        value=0,
+        step=1
+    )
+
+    neg_index = st.sidebar.number_input(
+        "Negative sequence index",
+        min_value=0,
+        max_value=len(neg_df) - 1,
+        value=0,
+        step=1
+    )
+
+    pos_seq = pos_df.iloc[pos_index][seq_col]
+    neg_seq = neg_df.iloc[neg_index][seq_col]
+
+    st.write(f"**Selected positive sequence index:** {pos_index}")
+    st.write(f"**Selected negative sequence index:** {neg_index}")
+    # ---------------------------------------------------
+    # Amino acid frequency plots for each selected sequence
+    # ---------------------------------------------------
+    st.subheader("📈 Amino Acid Frequency for Selected Sequences")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("**Positive sequence amino acid frequency**")
+        pos_freq_df = amino_acid_frequency(pos_seq)
+        st.bar_chart(pos_freq_df)
+
+    with col2:
+        st.markdown("**Negative sequence amino acid frequency**")
+        neg_freq_df = amino_acid_frequency(neg_seq)
+        st.bar_chart(neg_freq_df)
+     # ---------------------------------------------------
     # Raw data viewer in an expander + dropdown
     # ---------------------------------------------------
     with st.expander("📊 View raw data"):
@@ -223,7 +294,7 @@ def main():
 
     st.subheader("Combined Dataset (with 'label' column)")
     st.dataframe(all_df.head())
-
+    # ---------------------------------------------------
     # ---------------------------------------------------
     # Class distribution
     # ---------------------------------------------------
