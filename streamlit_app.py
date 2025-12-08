@@ -18,8 +18,8 @@ st.write('Welcome to our machine learning model building app')
 # ---------------------------------------------------
 POS_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/positive_protein_sequences.csv"
 NEG_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/negative_protein_sequences.csv"
-
-
+with st.expander("data"):
+    st.write("rawdata")
 # ---------------------------------------------------
 # 2. Data loading function (with optional sampling)
 # ---------------------------------------------------
