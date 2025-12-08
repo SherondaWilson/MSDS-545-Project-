@@ -253,8 +253,6 @@ def main():
         step=1
     )
 
-    pos_seq = pos_df.iloc[pos_index][seq_col]
-    neg_seq = neg_df.iloc[neg_index][seq_col]
     # Example: from a selectbox or some other UI
     pos_seq = pos_df.loc[selected_pos_index, "protein_sequences_1"]
     neg_seq = neg_df.loc[selected_neg_index, "protein_sequences_1"]
