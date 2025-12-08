@@ -1,8 +1,14 @@
 import streamlit as st
 import pandas as pd
 
-# List of the 20 standard amino acids
-AMINO_ACIDS = list("ACDEFGHIKLMNPQRSTVWY")
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    roc_auc_score,
+    roc_curve,
+)
 
 # ---------------------------------------------------
 # Streamlit page config
@@ -18,6 +24,8 @@ st.write('Welcome to our machine learning model building app')
 # 1. GitHub RAW URLs for your CSV files
 #    Update these if your repo/path is different
 # ---------------------------------------------------
+AMINO_ACIDS = list("ACDEFGHIKLMNPQRSTVWY")
+
 POS_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/positive_protein_sequences.csv"
 NEG_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/negative_protein_sequences.csv"
 
@@ -192,6 +200,7 @@ def main():
         f"Loaded {len(pos_df):,} positive and {len(neg_df):,} negative sequences "
         f"({len(all_df):,} rows in the working dataset)."
     )
+    
     def amino_acid_frequency(seq):
         """
         Given a single protein sequence string, return a DataFrame
