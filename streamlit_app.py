@@ -127,7 +127,27 @@ def load_data(sample_size=None):
             st.text_area("Negative protein 2", str(neg_row[seq2_col]), height=120)
         else:
             st.text_area("Negative protein", str(neg_row[seq1_col]), height=120)
+    # ---------------------------------------------------
+    # Compare the selected proteins
+    # ---------------------------------------------------
+    st.markdown("### 🔍 Compare Selected Proteins")
 
+    def seq_len(s):
+        return len(str(s)) if pd.notna(s) else 0
+
+    # Compute lengths for visualization
+    pos_len1 = seq_len(pos_row[seq1_col])
+    neg_len1 = seq_len(neg_row[seq1_col])
+
+    comp_df = pd.DataFrame({
+        "category": ["Positive", "Negative"],
+        "sequence_1_length": [pos_len1, neg_len1],
+    })
+
+    st.write("Sequence length comparison (using first sequence in each selection):")
+    st.dataframe(comp_df)
+
+    st.bar_chart(comp_df.set_index("category"))
 # ---------------------------------------------------
 # 3. Main Streamlit app
 # ---------------------------------------------------
