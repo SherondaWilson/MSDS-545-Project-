@@ -15,35 +15,35 @@ st.write('Welcome to our machine learning model building app')
 # 1. GitHub RAW URLs for your CSV files
 #    Update these if your repo/path is different
 # ---------------------------------------------------
-    POS_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/positive_protein_sequences.csv"
-    NEG_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/negative_protein_sequences.csv"
+POS_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/positive_protein_sequences.csv"
+NEG_URL = "https://raw.githubusercontent.com/alydhicks/Protein-Files/main/negative_protein_sequences.csv"
 
 # ---------------------------------------------------
 # 2. Data loading function (with optional sampling)
 # ---------------------------------------------------
-    @st.cache_data(show_spinner="Loading protein sequence data…")
-    def load_data(sample_size=None):
-        """
-        Load positive and negative protein CSVs from GitHub.
-        Adds a 'label' column and optionally returns a random sample.
-        """
-        # Read both CSVs from GitHub
-        pos_df = pd.read_csv(POS_URL)
-        neg_df = pd.read_csv(NEG_URL)
+@st.cache_data(show_spinner="Loading protein sequence data…")
+def load_data(sample_size=None):
+    """
+    Load positive and negative protein CSVs from GitHub.
+    Adds a 'label' column and optionally returns a random sample.
+    """
+    # Read both CSVs from GitHub
+    pos_df = pd.read_csv(POS_URL)
+    neg_df = pd.read_csv(NEG_URL)
 
-        # Add labels: 1 = positive, 0 = negative
-        pos_df["label"] = 1
-        neg_df["label"] = 0
+    # Add labels: 1 = positive, 0 = negative
+    pos_df["label"] = 1
+    neg_df["label"] = 0
 
-        # Combine into one DataFrame
-        all_df = pd.concat([pos_df, neg_df], ignore_index=True)
+    # Combine into one DataFrame
+    all_df = pd.concat([pos_df, neg_df], ignore_index=True)
 
-        # Optional sampling to avoid memory issues with very large data
-        if sample_size is not None and sample_size > 0:
-            sample_size = min(sample_size, len(all_df))
-            all_df = all_df.sample(n=sample_size, random_state=42)
+    # Optional sampling to avoid memory issues with very large data
+    if sample_size is not None and sample_size > 0:
+        sample_size = min(sample_size, len(all_df))
+        all_df = all_df.sample(n=sample_size, random_state=42)
 
-        return pos_df, neg_df, all_df
+    return pos_df, neg_df, all_df
 
 
 # ---------------------------------------------------
