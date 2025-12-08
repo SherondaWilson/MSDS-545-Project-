@@ -25,7 +25,7 @@ with st.expander("data"):
 # ---------------------------------------------------
     @st.cache_data(show_spinner="Loading protein sequence data…")
     def load_data(sample_size=None):
-    """
+        """
         Load positive and negative protein CSVs from GitHub.
         Adds a 'label' column and optionally returns a random sample.
         """
