@@ -1,6 +1,33 @@
 import streamlit as st
 import pandas as pd
 
+# List of the 20 standard amino acids
+AMINO_ACIDS = list("ACDEFGHIKLMNPQRSTVWY")
+def amino_acid_frequency(seq):
+    """
+    Given a single protein sequence string, return a DataFrame
+    with amino acid counts and frequencies.
+    """
+    if seq is None:
+        seq = ""
+    seq = str(seq)
+
+    # Count each amino acid
+    counts = {aa: seq.count(aa) for aa in AMINO_ACIDS}
+    total = sum(counts.values())
+
+    freqs = {
+        aa: (counts[aa] / total) if total > 0 else 0.0
+        for aa in AMINO_ACIDS
+    }
+
+    df = pd.DataFrame({
+        "amino_acid": AMINO_ACIDS,
+        "count": [counts[aa] for aa in AMINO_ACIDS],
+        "frequency": [freqs[aa] for aa in AMINO_ACIDS],
+    })
+
+    return df
 # ---------------------------------------------------
 # Streamlit page config
 # ---------------------------------------------------
@@ -43,20 +70,6 @@ def load_data(sample_size=None):
         sample_size = min(sample_size, len(all_df))
         all_df = all_df.sample(n=sample_size, random_state=42)
 
-    return pos_df, neg_df, all_df
-    AMINO_ACIDS = list("ACDEFGHIKLMNPQRSTVWY")
-
-def amino_acid_frequency(sequence: str) -> pd.DataFrame:
-    """
-    Given a protein sequence string, return a DataFrame with
-    amino acid frequencies (fraction of each AA).
-    """
-    seq = str(sequence).upper()
-    counts = {aa: seq.count(aa) for aa in AMINO_ACIDS}
-    total = sum(counts.values())
-    freqs = {aa: (counts[aa] / total if total > 0 else 0.0) for aa in AMINO_ACIDS}
-    df = pd.DataFrame({"AA": list(freqs.keys()), "frequency": list(freqs.values())})
-    return df.set_index("AA")
     # ---------------------------------------------------
     # 4. Explore proteins and visualize interaction
     # ---------------------------------------------------
@@ -242,6 +255,12 @@ def main():
 
     pos_seq = pos_df.iloc[pos_index][seq_col]
     neg_seq = neg_df.iloc[neg_index][seq_col]
+    # Example: from a selectbox or some other UI
+    pos_seq = pos_df.loc[selected_pos_index, "protein_sequences_1"]
+    neg_seq = neg_df.loc[selected_neg_index, "protein_sequences_1"]
+
+    pos_freq_df = amino_acid_frequency(pos_seq)
+    neg_freq_df = amino_acid_frequency(neg_seq)
 
     st.write(f"**Selected positive sequence index:** {pos_index}")
     st.write(f"**Selected negative sequence index:** {neg_index}")
